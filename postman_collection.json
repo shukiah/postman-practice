@@ -1,0 +1,4091 @@
+{
+	"info": {
+		"_postman_id": "b46391f0-47a5-4462-8b7d-d818143d6790",
+		"name": "Postman Practice [Patrick Cavaleiro]",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42874231",
+		"_collection_link": "https://www.postman.com/telecoms-architect-66385276/workspace/postman-practice-patrick-cavaleiro/collection/42874231-b46391f0-47a5-4462-8b7d-d818143d6790?action=share&source=collection_link&creator=42874231"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Success Sign Up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has user object\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"user\");\r",
+									"    pm.expect(jsonData.user).to.have.property(\"email\");\r",
+									"    pm.expect(jsonData.user).to.have.property(\"username\");\r",
+									"    pm.expect(jsonData.user).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.variables.has(\"passwordConduit\")) {\r",
+									"pm.variables.set(\"passwordConduit\", \"Deltapx7411!\");\r",
+									"}\r",
+									"\r",
+									"if (!pm.variables.has(\"emailConduit\")) {\r",
+									"    let randomEmail = `user_${Math.floor(Math.random() * 10000)}@example.com`;\r",
+									"    pm.variables.set(\"emailConduit\", randomEmail);\r",
+									"}\r",
+									"\r",
+									"if (!pm.variables.has(\"usernameConduit\")) {\r",
+									"    let randomUsername = `user_${Math.floor(Math.random() * 10000)}`;\r",
+									"    pm.variables.set(\"usernameConduit\", randomUsername);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": {\r\n        \"username\": \"{{$randomWord}}_{{$randomInt}}\",\r\n        \"email\": \"{{$randomEmail}}\",\r\n        \"password\": \"{{passwordConduit}}\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Succes Sign In",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {\r",
+									"    let timestamp = new Date().getTime();\r",
+									"    return `user_${timestamp}@test.com`;\r",
+									"}\r",
+									"function generateUniqueUsername() {\r",
+									"    return `TestUser_${new Date().getTime()}`;\r",
+									"}\r",
+									"\r",
+									"const email = generateUniqueEmail();\r",
+									"const username = generateUniqueUsername();\r",
+									"const password = \"TestPassword123!\";\r",
+									"\r",
+									"const createUserPayload = {\r",
+									"    user: {\r",
+									"        email: email,\r",
+									"        password: password,\r",
+									"        username: username\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.variables.set(\"userEmail\", email);\r",
+									"pm.variables.set(\"userPassword\", password);\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"    url: \"https://conduit.mate.academy/api/users\",\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify(createUserPayload)\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Erro ao criar usuário:\", err);\r",
+									"        return;\r",
+									"    }\r",
+									"    let jsonData = res.json();\r",
+									"    console.log(\"Usuário criado com sucesso:\", jsonData.user);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains a token\", function () {\r",
+									"    pm.expect(jsonData.user).to.have.property(\"token\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": {\r\n        \"email\": \"{{userEmail}}\",\r\n        \"password\": \"{{userPassword}}\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/users/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign In with non-existing credential",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"nonemailConduit\", \"non-existing@mail.com\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {\r",
+									"    pm.response.to.have.status(422);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains an error message\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"errors\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": {\r\n        \"email\": \"{{nonemailConduit}}\",\r\n        \"password\": \"{{passwordConduit}}\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users/login",
+							"host": [
+								"{{BASE_URL}}users"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign In with empty email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"email\": \"\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users/login",
+							"host": [
+								"{{BASE_URL}}users"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign In with empty password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"justEmail\", \"justemail@mail.com\"); ",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"email\": \"{{justEmail}}\",\n    \"password\": \"\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users/login",
+							"host": [
+								"{{BASE_URL}}users"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with taken username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response) {",
+									"    pm.test(\"Status code is 422\", function () {",
+									"        pm.response.to.have.status(422);",
+									"    });",
+									"",
+									"    pm.test(\"Response has error message for duplicate username\", function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property(\"errors\");",
+									"        pm.expect(response.errors).to.have.property(\"username\");",
+									"        pm.expect(response.errors.username).to.include(\"This username is taken.\");",
+									"    });",
+									"} else {",
+									"    console.error(\"Nenhuma resposta recebida do servidor.\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"",
+									"const takenUsername = \"ExistingUser123\";",
+									"pm.variables.set(\"takenusername\", takenUsername);",
+									"",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: takenUsername",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.error(\"Erro ao criar usuário:\", err);",
+									"    } else {",
+									"        console.log(\"Usuário criado com sucesso!\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{takenusername}}\",\n        \"email\": \"{{$randomEmail}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with taken email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response) {",
+									"    pm.test(\"Status code is 422\", function () {",
+									"        pm.response.to.have.status(422);",
+									"    });",
+									"",
+									"    pm.test(\"Response has error message for duplicate email\", function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property(\"errors\");",
+									"        pm.expect(response.errors).to.have.property(\"email\");",
+									"        pm.expect(response.errors.email).to.include(\"This email is taken.\");",
+									"    });",
+									"} else {",
+									"    console.error(\"Nenhuma resposta recebida do servidor.\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueUsername() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}`;",
+									"}",
+									"",
+									"const takenEmail = \"existinguser@test.com\";",
+									"pm.variables.set(\"takenemail\", takenEmail);",
+									"",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: takenEmail,",
+									"        password: \"TestPassword123!\",",
+									"        username: generateUniqueUsername()",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.error(\"Erro ao criar usuário:\", err);",
+									"    } else {",
+									"        console.log(\"Requisição enviada com sucesso!\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{$randomUserName}}\",\n        \"email\": \"{{takenemail}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with username starting from number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let UsernameNumber = `1user_${Math.floor(Math.random() * 10000)}`;",
+									"    pm.variables.set(\"usernameNumber\", UsernameNumber);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"username\": \"{{usernameNumber}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{passwordConduit}}\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with username with 41 symbols",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateLongUsername(length) {",
+									"    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';",
+									"    let username = '';",
+									"    ",
+									"    for (let i = 0; i < length; i++) {",
+									"        username += chars.charAt(Math.floor(Math.random() * chars.length));",
+									"    }",
+									"    ",
+									"    return username;",
+									"}",
+									"",
+									"pm.variables.set(\"longUsername\", generateLongUsername(41));",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"username\": \"{{longUsername}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{$randomWord}}\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with username with spaces",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"usernameSpace\", \"Patrick Cavaleiro\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{usernameSpace}}\",\n        \"email\": \"{{$randomEmail}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with empty username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"emailField\", \"emailfield@mail.com.br\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"\",\n        \"email\": \"{{emailField}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with empty email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"justUsername\", \"UsernameTeste\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{justUsername}}\",\n        \"email\": \"\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with email without @",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"emailWithoutAt\", \"teste.com.br\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{$randomWord}}\",\n        \"email\": \"{{emailWithoutAt}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with email without .",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"emailWithoutDot\", \"teste@mail\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{$randomWord}}\",\n        \"email\": \"{{emailWithoutDot}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with email without name part",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"emailWithoutName\", \"@mail.com.br\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{$randomWord}}\",\n        \"email\": \"{{emailWithoutName}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with email with more than 500 symbols",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateLongEmail() {",
+									"    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'; ",
+									"    let localPart = ''; ",
+									"    let domain = '@example.com';",
+									"",
+									"    for (let i = 0; i < 500; i++) {",
+									"        localPart += chars.charAt(Math.floor(Math.random() * chars.length));",
+									"    }",
+									"",
+									"    return localPart + domain;",
+									"}",
+									"",
+									"pm.variables.set(\"longEmail\", generateLongEmail());",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{$randomWord}}\",\n        \"email\": \"{{longEmail}}\",\n        \"password\": \"{{passwordConduit}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up with empty password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"user\": {\n\t\t\"username\": \"{{$randomWord}}\",\n\t\t\"email\": \"{{$randomEmail}}\",\n\t\t\"password\": \"\"\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}users",
+							"host": [
+								"{{BASE_URL}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get info about user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User data is returned\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"user\");",
+									"    pm.expect(jsonData.user).to.have.property(\"email\");",
+									"    pm.expect(jsonData.user).to.have.property(\"username\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `TestUser_${Date.now()}`;",
+									"}",
+									"",
+									"const signupPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: generateUniqueUsername()",
+									"    }",
+									"};",
+									"",
+									"pm.variables.set(\"email\", signupPayload.user.email);",
+									"pm.variables.set(\"username\", signupPayload.user.username);",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(signupPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const jsonData = res.json();",
+									"    if (jsonData.user && jsonData.user.token) {",
+									"        pm.variables.set(\"authToken\", jsonData.user.token);",
+									"        console.log(\"Usuário criado com sucesso.\");",
+									"    } else {",
+									"        console.log(\"Erro: Token não retornado na criação do usuário.\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"username\": \"{{username}}\",\n    \"email\": \"{{userEmail}}\",\n    \"password\": \"{{userPassword}}\"\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}user",
+							"host": [
+								"{{BASE_URL}}user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update info about user: image",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: \"TestUser_\" + new Date().getTime()",
+									"    }",
+									"};",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    let jsonData = res.json();",
+									"    let authToken = jsonData.user.token;",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    console.log(\"Usuário criado com sucesso! Token armazenado.\");",
+									"    const updatedImage = pm.request.body.raw;",
+									"    const updatePayload = {",
+									"        user: {",
+									"            image: updatedImage",
+									"        }",
+									"    };",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/user\",",
+									"        method: \"PUT\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + authToken",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(updatePayload)",
+									"        }",
+									"    }, function (err, updateRes) {",
+									"        let updatedUser = updateRes.json();",
+									"        console.log(\"Bio do usuário atualizada com sucesso:\", updatedUser);",
+									"    });",
+									"});",
+									"",
+									"",
+									"const uniqueImageUrl = \"https://example.com/image_\" + Date.now() + \".jpg\";",
+									"",
+									"pm.variables.set(\"uniqueImageUrl\", uniqueImageUrl);",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"image\": \"{{uniqueImageUrl}}\"\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}user",
+							"host": [
+								"{{BASE_URL}}user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update info about user: bio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: \"TestUser_\" + new Date().getTime()",
+									"    }",
+									"};",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    let jsonData = res.json();",
+									"    let authToken = jsonData.user.token;",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    console.log(\"Usuário criado com sucesso! Token armazenado.\");",
+									"    const updatedBio = pm.request.body.raw;",
+									"    const updatePayload = {",
+									"        user: {",
+									"            bio: updatedBio",
+									"        }",
+									"    };",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/user\",",
+									"        method: \"PUT\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + authToken",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(updatePayload)",
+									"        }",
+									"    }, function (err, updateRes) {",
+									"        let updatedUser = updateRes.json();",
+									"        console.log(\"Bio do usuário atualizada com sucesso:\", updatedUser);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": {\n    \"bio\": \"new bio: {{$randomWord}}\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}user",
+							"host": [
+								"{{BASE_URL}}user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update info about user: username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: \"TestUser_\" + new Date().getTime()",
+									"    }",
+									"};",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    let jsonData = res.json();",
+									"    let authToken = jsonData.user.token;",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    console.log(\"Usuário criado com sucesso! Token armazenado.\");",
+									"    const updatedUsername = pm.request.body.raw; ",
+									"    const updatePayload = {",
+									"        user: {",
+									"            username: updatedUsername",
+									"        }",
+									"    };",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/user\",",
+									"        method: \"PUT\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + authToken",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(updatePayload)",
+									"        }",
+									"    }, function (err, updateRes) {",
+									"        let updatedUser = updateRes.json();",
+									"        console.log(\"Username do usuário atualizada com sucesso:\", updatedUser);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"username\": \"{{$randomWord}}_{{$randomInt}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}user",
+							"host": [
+								"{{BASE_URL}}user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update info about user: Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: \"TestUser_\" + new Date().getTime()",
+									"    }",
+									"};",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    let jsonData = res.json();",
+									"    let authToken = jsonData.user.token;",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    console.log(\"Usuário criado com sucesso! Token armazenado.\");",
+									"    const updatedEmail = pm.request.body.raw; ",
+									"    const updatePayload = {",
+									"        user: {",
+									"            email: updatedEmail",
+									"        }",
+									"    };",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/user\",",
+									"        method: \"PUT\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + authToken",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(updatePayload)",
+									"        }",
+									"    }, function (err, updateRes) {",
+									"        let updatedUser = updateRes.json();",
+									"        console.log(\"Username do usuário atualizada com sucesso:\", updatedUser);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"email\": \"{{$randomEmail}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}user",
+							"host": [
+								"{{BASE_URL}}user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update info about user: Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: \"TestUser_\" + new Date().getTime()",
+									"    }",
+									"};",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    let jsonData = res.json();",
+									"    let authToken = jsonData.user.token;",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    console.log(\"Usuário criado com sucesso! Token armazenado.\");",
+									"    const updatedPassword = pm.request.body.raw; ",
+									"    const updatePayload = {",
+									"        user: {",
+									"            password: updatedPassword",
+									"        }",
+									"    };",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/user\",",
+									"        method: \"PUT\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + authToken",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(updatePayload)",
+									"        }",
+									"    }, function (err, updateRes) {",
+									"        let updatedUser = updateRes.json();",
+									"        console.log(\"Username do usuário atualizada com sucesso:\", updatedUser);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"password\": \"Test3Password!\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}user",
+							"host": [
+								"{{BASE_URL}}user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update info about user without authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"Deltapx7411!\",",
+									"        username: \"ptck\" + new Date().getTime()",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.error(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    let jsonData = res.json();",
+									"    let authToken = jsonData.user.token;",
+									"    let username = jsonData.user.username;",
+									"",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    pm.variables.set(\"username\", username);",
+									"",
+									"    console.log(\"Usuário criado com sucesso! Token e username armazenados.\");",
+									"",
+									"    const updatePayload = {",
+									"        user: {",
+									"            username: \"UpdatedUsername_\" + new Date().getTime() ",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/user\",",
+									"        method: \"PUT\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token invalid_token\"",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(updatePayload)",
+									"        }",
+									"    }, function (err, updateRes) {",
+									"        if (err) {",
+									"            console.error(\"Erro ao tentar atualizar usuário:\", err);",
+									"            return;",
+									"        }",
+									"",
+									"        console.log(\"Resposta da tentativa de atualização:\", updateRes.json());",
+									"",
+									"        pm.test(\"Status code is 401 or 403\", function () {",
+									"            pm.expect(updateRes.code).to.be.oneOf([401, 403]);",
+									"        });",
+									"",
+									"        pm.test(\"Response has error message for unauthorized update\", function () {",
+									"            const response = updateRes.json();",
+									"            pm.expect(response).to.have.property(\"errors\");",
+									"            pm.expect(response.errors).to.include(\"Unauthorized\");",
+									"        });",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"password\": \"{{$randomWord}}_{{$randomInt}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}user",
+							"host": [
+								"{{BASE_URL}}user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Articles",
+			"item": [
+				{
+					"name": "Create an article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has article object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"article\");",
+									"    pm.expect(jsonData.article).to.have.property(\"title\");",
+									"    pm.expect(jsonData.article).to.have.property(\"description\");",
+									"    pm.expect(jsonData.article).to.have.property(\"body\");",
+									"    pm.expect(jsonData.article).to.have.property(\"slug\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `TestUser_${Date.now()}`;",
+									"}",
+									"",
+									"const signupPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: generateUniqueUsername()",
+									"    }",
+									"};",
+									"",
+									"pm.variables.set(\"email\", signupPayload.user.email);",
+									"pm.variables.set(\"username\", signupPayload.user.username);",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(signupPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const jsonData = res.json();",
+									"    if (jsonData.user && jsonData.user.token) {",
+									"        pm.variables.set(\"authToken\", jsonData.user.token);",
+									"        console.log(\"Usuário criado e token armazenado.\");",
+									"    } else {",
+									"        console.log(\"Erro ao obter token do usuário.\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"article\": {\n    \"title\": \"{{$randomWord}}\",\n    \"description\": \"Description\",\n    \"body\": \"content\",\n    \"tagList\": [\"postman\", \"automation\"]\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles",
+							"host": [
+								"{{BASE_URL}}articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update an article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Article was updated correctly\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"article\");",
+									"    pm.expect(jsonData.article.title).to.include(\"Updated Title\");",
+									"    pm.expect(jsonData.article.description).to.eql(\"Updated Description\");",
+									"    pm.expect(jsonData.article.body).to.eql(\"Updated content\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"function generateUniqueUsername() {",
+									"    return `TestUser_${Date.now()}`;",
+									"}",
+									"function generateUniqueTitle() {",
+									"    return `Updated Article ${Date.now()}`;",
+									"}",
+									"",
+									"const signupPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: generateUniqueUsername()",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(signupPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const userData = res.json();",
+									"    const token = userData.user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: \"Original Title \" + Date.now(),",
+									"            description: \"Original Description\",",
+									"            body: \"Original content\",",
+									"            tagList: [\"update\", \"test\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + token",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err, resArticle) {",
+									"        if (err) {",
+									"            console.log(\"Erro ao criar artigo:\", err);",
+									"            return;",
+									"        }",
+									"",
+									"        const articleData = resArticle.json();",
+									"        const slug = articleData.article.slug;",
+									"",
+									"        pm.variables.set(\"articleSlug\", slug);",
+									"        console.log(\"Artigo criado com slug:\", slug);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"article\": {\n    \"title\": \"Updated Title\",\n    \"description\": \"Updated Description\",\n    \"body\": \"Updated content\"\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{articleSlug}}",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{articleSlug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get an article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Article object is returned\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"article\");",
+									"    pm.expect(jsonData.article).to.have.property(\"title\");",
+									"    pm.expect(jsonData.article).to.have.property(\"body\");",
+									"    pm.expect(jsonData.article).to.have.property(\"slug\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `TestUser_${Date.now()}`;",
+									"}",
+									"",
+									"function generateUniqueTitle() {",
+									"    return `Article Title ${Date.now()}`;",
+									"}",
+									"",
+									"const articleTitle = generateUniqueTitle();",
+									"pm.variables.set(\"articleTitle\", articleTitle);",
+									"",
+									"const signupPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: generateUniqueUsername()",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(signupPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const userData = res.json();",
+									"    const token = userData.user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: articleTitle,",
+									"            description: \"Description for test GET\",",
+									"            body: \"This is the body of the article\",",
+									"            tagList: [\"get\", \"test\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + token",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err, articleRes) {",
+									"        if (err) {",
+									"            console.log(\"Erro ao criar artigo:\", err);",
+									"            return;",
+									"        }",
+									"",
+									"        const articleData = articleRes.json();",
+									"        const slug = articleData.article.slug;",
+									"",
+									"        pm.variables.set(\"articleSlug\", slug);",
+									"        console.log(\"Artigo criado com slug:\", slug);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{articleSlug}}",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{articleSlug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get articles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Articles list is returned\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"articles\");",
+									"    pm.expect(jsonData.articles).to.be.an(\"array\");",
+									"    pm.expect(jsonData.articles.length).to.be.above(0);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `TestUser_${Date.now()}`;",
+									"}",
+									"",
+									"function generateUniqueTitle() {",
+									"    return `Article Title ${Date.now()}`;",
+									"}",
+									"",
+									"const articleTitle = generateUniqueTitle();",
+									"pm.variables.set(\"articleTitle\", articleTitle);",
+									"",
+									"const signupPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: generateUniqueUsername()",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(signupPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: articleTitle,",
+									"            description: \"Auto-generated article for GET /articles\",",
+									"            body: \"Article body content\",",
+									"            tagList: [\"public\", \"list\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + token",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err, articleRes) {",
+									"        if (err) {",
+									"            console.log(\"Erro ao criar artigo:\", err);",
+									"            return;",
+									"        }",
+									"",
+									"        const slug = articleRes.json().article.slug;",
+									"        pm.variables.set(\"articleSlug\", slug);",
+									"        console.log(\"Artigo criado com slug:\", slug);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles",
+							"host": [
+								"{{BASE_URL}}articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get articles from Your feed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"    console.log(\"Usuário criado para GET /articles/feed\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles/feed?limit=10&offset=0",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"feed"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get articles from Global Feed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"function generateUniqueTitle() {",
+									"    return `Global Article ${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"const articleTitle = generateUniqueTitle();",
+									"pm.variables.set(\"articleTitle\", articleTitle);",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: articleTitle,",
+									"            description: \"Test article for global feed\",",
+									"            body: \"This article was created to ensure global feed has data.\",",
+									"            tagList: [\"global\", \"automation\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + token",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err, articleRes) {",
+									"        console.log(\"Artigo criado para alimentar o Global Feed\");",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles?limit=10&offset=0",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get articles by tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `TestUser_${Date.now()}`;",
+									"}",
+									"",
+									"const signupPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: generateUniqueUsername()",
+									"    }",
+									"};",
+									"",
+									"pm.variables.set(\"email\", signupPayload.user.email);",
+									"pm.variables.set(\"username\", signupPayload.user.username);",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(signupPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const jsonData = res.json();",
+									"    if (jsonData.user && jsonData.user.token) {",
+									"        pm.variables.set(\"authToken\", jsonData.user.token);",
+									"        console.log(\"Usuário criado e token armazenado.\");",
+									"    } else {",
+									"        console.log(\"Erro ao obter token do usuário.\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles?limit=10&tag=Future&offset=0",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "tag",
+									"value": "Future"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create an article without authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Funções para gerar email e username únicos",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"article\": {\n    \"title\": \"{{$randomWord}}\",\n    \"description\": \"Description\",\n    \"body\": \"content\",\n    \"tagList\": [\"postman\", \"automation\"]\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles",
+							"host": [
+								"{{BASE_URL}}articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an article without authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"function generateUniqueTitle() {",
+									"    return `Unauthorized Delete ${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"const articleTitle = generateUniqueTitle();",
+									"pm.variables.set(\"articleTitle\", articleTitle);",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    const token = res.json().user.token;",
+									"    ",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: articleTitle,",
+									"            description: \"Article created for delete test\",",
+									"            body: \"This article will be used to test delete without auth\",",
+									"            tagList: [\"delete\", \"unauthorized\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + token",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err, articleRes) {",
+									"        const slug = articleRes.json().article.slug;",
+									"        pm.variables.set(\"slug\", slug);",
+									"        console.log(\"Artigo criado com slug:\", slug);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"article\": {\n    \"title\": \"Unauthorized Test\",\n    \"description\": \"Should fail\",\n    \"body\": \"This article creation should not work\",\n    \"tagList\": [\"unauthorized\", \"test\"]\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{slug}}",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{slug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"function generateUniqueTitle() {",
+									"    return `Article to Delete ${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"const articleTitle = generateUniqueTitle();",
+									"pm.variables.set(\"articleTitle\", articleTitle);",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: articleTitle,",
+									"            description: \"Article created for authorized delete test\",",
+									"            body: \"This article will be deleted with proper token\",",
+									"            tagList: [\"delete\", \"authorized\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": \"Token \" + token",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err, articleRes) {",
+									"        const slug = articleRes.json().article.slug;",
+									"        pm.variables.set(\"slug\", slug);",
+									"        console.log(\"Artigo criado com slug:\", slug);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{slug}}",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{slug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an article of another user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_b_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `UserB_${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"    console.log(\"Usuário B criado com sucesso!\");",
+									"});",
+									"",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/articles?limit=1\",",
+									"    method: \"GET\"",
+									"}, function (err, res) {",
+									"    if (!err && res.code === 200) {",
+									"        const jsonData = res.json();",
+									"        const slug = jsonData.articles[0].slug;",
+									"        pm.variables.set(\"slug\", slug);",
+									"        console.log(\"Slug capturado do Global Feed:\", slug);",
+									"    } else {",
+									"        console.log(\"Erro ao buscar artigo do feed:\", err || res.code);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{slug}}",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{slug}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete non-existing article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_b_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `UserB_${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"    console.log(\"Usuário B criado com sucesso!\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}articles/non-existing",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"non-existing"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Get info about profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has profile object\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"profile\");",
+									"    pm.expect(jsonData.profile).to.have.property(\"username\");",
+									"    pm.expect(jsonData.profile).to.have.property(\"bio\");",
+									"    pm.expect(jsonData.profile).to.have.property(\"image\");",
+									"    pm.expect(jsonData.profile).to.have.property(\"following\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    const jsonData = res.json();",
+									"    const username = jsonData.user.username;",
+									"    pm.variables.set(\"profileUsername\", username);",
+									"    console.log(\"Usuário criado:\", username);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profile\": {\n        \"username\": \"mate\",\n        \"bio\": null,\n        \"image\": \"https://static.productionready.io/images/smiley-cyrus.jpg\",\n        \"following\": false\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}profiles/{{profileUsername}}",
+							"host": [
+								"{{BASE_URL}}profiles"
+							],
+							"path": [
+								"{{profileUsername}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Follow the user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário A:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"    console.log(\"Usuário A criado com sucesso.\");",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles?limit=1\",",
+									"        method: \"GET\"",
+									"    }, function (err2, res2) {",
+									"        if (err2 || res2.code !== 200) {",
+									"            console.log(\"Erro ao buscar artigo para pegar username:\", err2 || res2.code);",
+									"            return;",
+									"        }",
+									"",
+									"        const usernameToFollow = res2.json().articles[0].author.username;",
+									"        pm.variables.set(\"usernameToFollow\", usernameToFollow);",
+									"        console.log(\"Usuário a ser seguido:\", usernameToFollow);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}profiles/{{usernameToFollow}}/follow",
+							"host": [
+								"{{BASE_URL}}profiles"
+							],
+							"path": [
+								"{{usernameToFollow}}",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfollow the user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário A:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"    console.log(\"Usuário A criado com sucesso\");",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles?limit=1\",",
+									"        method: \"GET\"",
+									"    }, function (err2, res2) {",
+									"        if (err2 || res2.code !== 200) {",
+									"            console.log(\"Erro ao buscar artigo:\", err2 || res2.code);",
+									"            return;",
+									"        }",
+									"",
+									"        const usernameToUnfollow = res2.json().articles[0].author.username;",
+									"        pm.variables.set(\"usernameToUnfollow\", usernameToUnfollow);",
+									"        console.log(\"Usuário B (a ser unfollowed):\", usernameToUnfollow);",
+									"",
+									"        pm.sendRequest({",
+									"            url: `https://conduit.mate.academy/api/profiles/${usernameToUnfollow}/follow`,",
+									"            method: \"POST\",",
+									"            header: {",
+									"                \"Authorization\": \"Token \" + token,",
+									"                \"Content-Type\": \"application/json\"",
+									"            }",
+									"        }, function (err3, res3) {",
+									"            if (err3) {",
+									"                console.log(\"Erro ao fazer follow:\", err3);",
+									"                return;",
+									"            }",
+									"            console.log(\"Follow feito com sucesso antes do Unfollow.\");",
+									"        });",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}profiles/{{usernameToUnfollow}}/follow",
+							"host": [
+								"{{BASE_URL}}profiles"
+							],
+							"path": [
+								"{{usernameToUnfollow}}",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tags",
+			"item": [
+				{
+					"name": "Get tags",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}tags",
+							"host": [
+								"{{BASE_URL}}tags"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "Get comments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/articles?limit=1\",",
+									"    method: \"GET\"",
+									"}, function (err, res) {",
+									"    if (!err && res.code === 200) {",
+									"        const slug = res.json().articles[0].slug;",
+									"        pm.variables.set(\"slug\", slug);",
+									"        console.log(\"Slug do artigo para pegar comentários:\", slug);",
+									"    } else {",
+									"        console.log(\"Erro ao buscar artigo:\", err || res.code);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{slug}}/comments",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{slug}}",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post a comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has comment object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"comment\");",
+									"    pm.expect(jsonData.comment).to.have.property(\"id\");",
+									"    pm.expect(jsonData.comment).to.have.property(\"body\");",
+									"    pm.expect(jsonData.comment).to.have.property(\"author\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    return `user_${Date.now()}@test.com`;",
+									"}",
+									"",
+									"function generateUniqueUsername() {",
+									"    return `User_${Date.now()}`;",
+									"}",
+									"",
+									"const user = {",
+									"    email: generateUniqueEmail(),",
+									"    username: generateUniqueUsername(),",
+									"    password: \"TestPassword123!\"",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({ user: user })",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err) {",
+									"        console.log(\"Erro ao criar usuário:\", err);",
+									"        return;",
+									"    }",
+									"",
+									"    const token = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", token);",
+									"    console.log(\"Usuário A criado com sucesso\");",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles?limit=1\",",
+									"        method: \"GET\"",
+									"    }, function (err2, res2) {",
+									"        if (err2 || res2.code !== 200) {",
+									"            console.log(\"Erro ao buscar artigo:\", err2 || res2.code);",
+									"            return;",
+									"        }",
+									"",
+									"        const slug = res2.json().articles[0].slug;",
+									"        pm.variables.set(\"slug\", slug);",
+									"        console.log(\"Slug do artigo encontrado:\", slug);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": {\n        \"body\": \"Hey, Alexa!\"\n    }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{slug}}/comments",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{slug}}",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a comment without authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/articles?limit=1\",",
+									"    method: \"GET\"",
+									"}, function (err, res) {",
+									"    if (err || res.code !== 200) {",
+									"        console.log(\"Erro ao buscar artigo:\", err || res.code);",
+									"        return;",
+									"    }",
+									"",
+									"    const slug = res.json().articles[0].slug;",
+									"    pm.variables.set(\"slug\", slug);",
+									"    console.log(\"Slug do artigo encontrado:\", slug);",
+									"",
+									"    pm.sendRequest({",
+									"        url: `https://conduit.mate.academy/api/articles/${slug}/comments`,",
+									"        method: \"GET\"",
+									"    }, function (err2, res2) {",
+									"        if (err2 || res2.code !== 200) {",
+									"            console.log(\"Erro ao buscar comentários:\", err2 || res2.code);",
+									"            return;",
+									"        }",
+									"",
+									"        const commentId = res2.json().comments[0].id;",
+									"        pm.variables.set(\"commentId\", commentId);",
+									"        console.log(\"Comentário encontrado com ID:\", commentId);",
+									"",
+									"        pm.sendRequest({",
+									"            url: `https://conduit.mate.academy/api/articles/${slug}/comments/${commentId}`,",
+									"            method: \"DELETE\",",
+									"            header: {",
+									"            }",
+									"        });",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{slug}}/comments/{{commentId}}",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{slug}}",
+								"comments",
+								"{{commentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: \"TestUser_\" + new Date().getTime()",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: \"https://conduit.mate.academy/api/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err || res.code !== 200) {",
+									"        console.log(\"Erro ao criar usuário:\", err || res.code);",
+									"        return;",
+									"    }",
+									"",
+									"    const authToken = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    console.log(\"Usuário criado com sucesso! Token armazenado.\");",
+									"",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: \"Title for testing\",",
+									"            description: \"Description for testing\",",
+									"            body: \"Content of the article\",",
+									"            tagList: [\"postman\", \"automation\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: \"https://conduit.mate.academy/api/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": `Token ${authToken}`",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err2, res2) {",
+									"        if (err2 || res2.code !== 200) {",
+									"            console.log(\"Erro ao criar artigo:\", err2 || res2.code);",
+									"            return;",
+									"        }",
+									"",
+									"        const slug = res2.json().article.slug;",
+									"        pm.variables.set(\"slug\", slug);",
+									"        console.log(\"Artigo criado com sucesso! Slug do artigo:\", slug);",
+									"",
+									"        const commentPayload = {",
+									"            comment: {",
+									"                body: \"Este é um comentário de teste\"",
+									"            }",
+									"        };",
+									"",
+									"        pm.sendRequest({",
+									"            url: `https://conduit.mate.academy/api/articles/${slug}/comments`,",
+									"            method: \"POST\",",
+									"            header: {",
+									"                \"Content-Type\": \"application/json\",",
+									"                \"Authorization\": `Token ${authToken}`",
+									"            },",
+									"            body: {",
+									"                mode: \"raw\",",
+									"                raw: JSON.stringify(commentPayload)",
+									"            }",
+									"        }, function (err3, res3) {",
+									"            if (err3 || res3.code !== 200) {",
+									"                console.log(\"Erro ao criar comentário:\", err3 || res3.code);",
+									"                return;",
+									"            }",
+									"",
+									"            const commentId = res3.json().comment.id;",
+									"            pm.variables.set(\"commentId\", commentId);",
+									"            console.log(\"Comentário criado com sucesso! ID do comentário:\", commentId);",
+									"",
+									"        });",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}articles/{{slug}}/comments/{{commentId}}",
+							"host": [
+								"{{BASE_URL}}articles"
+							],
+							"path": [
+								"{{slug}}",
+								"comments",
+								"{{commentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a comment of another user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateUniqueEmail() {",
+									"    let timestamp = new Date().getTime();",
+									"    return `user_${timestamp}@test.com`;",
+									"}",
+									"",
+									"const loginPayload = {",
+									"    user: {",
+									"        email: generateUniqueEmail(),",
+									"        password: \"TestPassword123!\",",
+									"        username: \"TestUser_\" + new Date().getTime()",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest({",
+									"    url: pm.variables.get(\"BASE_URL\") + \"/users\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\"",
+									"    },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify(loginPayload)",
+									"    }",
+									"}, function (err, res) {",
+									"    if (err || res.code !== 200) {",
+									"        console.log(\"Erro ao criar usuário:\", err || res.code);",
+									"        return;",
+									"    }",
+									"",
+									"    const authToken = res.json().user.token;",
+									"    pm.variables.set(\"authToken\", authToken);",
+									"    console.log(\"Usuário criado com sucesso! Token armazenado.\");",
+									"",
+									"    const articlePayload = {",
+									"        article: {",
+									"            title: \"Title for testing\",",
+									"            description: \"Description for testing\",",
+									"            body: \"Content of the article\",",
+									"            tagList: [\"postman\", \"automation\"]",
+									"        }",
+									"    };",
+									"",
+									"    pm.sendRequest({",
+									"        url: pm.variables.get(\"BASE_URL\") + \"/articles\",",
+									"        method: \"POST\",",
+									"        header: {",
+									"            \"Content-Type\": \"application/json\",",
+									"            \"Authorization\": `Token ${authToken}`",
+									"        },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify(articlePayload)",
+									"        }",
+									"    }, function (err2, res2) {",
+									"        if (err2 || res2.code !== 200) {",
+									"            console.log(\"Erro ao criar artigo:\", err2 || res2.code);",
+									"            return;",
+									"        }",
+									"",
+									"        const slug = res2.json().article.slug;",
+									"        pm.variables.set(\"slug\", slug);",
+									"        console.log(\"Artigo criado com sucesso! Slug do artigo:\", slug);",
+									"",
+									"        const commentPayload = {",
+									"            comment: {",
+									"                body: \"Este é um comentário de teste\"",
+									"            }",
+									"        };",
+									"",
+									"        pm.sendRequest({",
+									"            url: pm.variables.get(\"BASE_URL\") + `/articles/${slug}/comments`,",
+									"            method: \"POST\",",
+									"            header: {",
+									"                \"Content-Type\": \"application/json\",",
+									"                \"Authorization\": `Token ${authToken}`",
+									"            },",
+									"            body: {",
+									"                mode: \"raw\",",
+									"                raw: JSON.stringify(commentPayload)",
+									"            }",
+									"        }, function (err3, res3) {",
+									"            if (err3 || res3.code !== 200) {",
+									"                console.log(\"Erro ao criar comentário:\", err3 || res3.code);",
+									"                return;",
+									"            }",
+									"",
+									"            const commentId = res3.json().comment.id;",
+									"            pm.variables.set(\"commentId\", commentId);",
+									"            console.log(\"Comentário criado com sucesso! ID do comentário:\", commentId);",
+									"        });",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/articles/{{slug}}/comments/{{commentId}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"articles",
+								"{{slug}}",
+								"comments",
+								"{{commentId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "https://conduit.mate.academy/api/"
+		},
+		{
+			"key": "passwordConduit",
+			"value": "Deltapx7411!"
+		},
+		{
+			"key": "slugConduit",
+			"value": ""
+		}
+	]
+}
