@@ -56,21 +56,21 @@ pm.test("Resposta contém token", () => {
 
 ## 🗂️ Estrutura dos Testes
 
-📂 Coleção
-├─ 📂 User (18 cenários)
-│  ├─ ✅ Success Sign Up
-│  ├─ ❌ Sign Up com email inválido
-│  └─ ⚠️ Edge cases (username numérico, campos vazios)
-├─ 📂 Articles (15 cenários)
-│  ├─ 📝 Create/Update
-│  └─ 🗑️ Delete/Validações
-├─ 📂 Profile (3 cenários)
-│  └─ 📝 Follow/Unfollow
-├─ 📂 Tags (1 cenário)
-│  └─ Get
-└─ 📂 Comments (5 cenários)
-   ├─ 💬 Post/Commentários
-   └─ 🔒 Validação de permissões
+└─ 📂 Coleção
+   ├─ 📂 User (18 cenários)
+   │  ├─ ✅ Success Sign Up
+   │  ├─ ❌ Sign Up com email inválido
+   │  └─ ⚠️ Edge cases (username numérico, campos vazios)
+   ├─ 📂 Articles (15 cenários)
+   │  ├─ 📝 Create/Update
+   │  └─ 🗑️ Delete/Validações
+   ├─ 📂 Profile (3 cenários)
+   │  └─ 📝 Follow/Unfollow
+   ├─ 📂 Tags (1 cenário)
+   │  └─ 📋 Get
+   └─ 📂 Comments (5 cenários)
+      ├─ 💬 Post/Commentários
+      └─ 🔒 Validação de permissões
 
 ## 💡 Dicas para Execução
 
