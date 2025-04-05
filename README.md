@@ -1,6 +1,6 @@
 # 🚀 Postman Practice - API Test Collection
 
-Coleção Postman para testes de API do sistema **Conduit** (plataforma de artigos/blog), desenvolvida por Patrick Cavaleiro.
+Coleção Postman para testes de API do sistema **Conduit** (plataforma de artigos/blog).
 
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 
