@@ -89,7 +89,7 @@ View > Show Postman Console (Ctrl+Alt+C)
 console.log("Dados da resposta:", pm.response.json());
 ```
 
-# ⚠️ Observação
+## ⚠️ Observação
 Muitos testes utilizam dados randômicos para evitar conflitos:
 ```
 {{$randomEmail}}  // Exemplo de variável dinâmica
